@@ -1,5 +1,4 @@
 const ServerMock = require("mock-http-server");
-const { mockWeatherResponses } = require("./mockweather");
 
 const port = process.env.PORT || 3030;
 const server = new ServerMock({
@@ -26,9 +25,12 @@ server.on({
   path: "/data/2.5/weather",
   reply: {
     status: () => {
-      return `${shouldFail ? 500 : 200}`;
+      return shouldFail() ? 429 : 200;
     },
-    headers: { "content-type": "application/json" },
+    headers: {
+      "content-type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
     body: () => {
       return JSON.stringify(randWeather());
     },
